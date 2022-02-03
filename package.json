@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "express": "^4.17.2",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^3.2.0",
+    "sequelize": "^6.15.0",
+    "sqlite3": "^5.0.2",
+    "swagger-ui-express": "^4.3.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jasmine": "^4.0.2",
+    "supertest": "^6.2.2"
+  },
+  "name": "ticket-management-system",
+  "version": "1.0.0",
+  "description": "An api for ticket management",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine",
+    "start": "node index.js"
+  },
+  "author": "Sushant Singh",
+  "license": "ISC"
+}

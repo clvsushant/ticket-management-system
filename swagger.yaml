@@ -1,0 +1,407 @@
+openapi: 3.0.0
+info:
+  title: Tickets API
+  version: 1.0.0
+  description: Tickets API
+
+servers:
+  - url: http://localhost:4001
+    description: Local Development Server
+
+tags:
+  - name: Ticket
+    description: Ticket API calls
+
+components:
+  securitySchemes:
+    token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateTicket:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: ['asset', 'employee', 'other']
+          example: 'asset'
+        subcategory:
+          type: string
+          enum: ['requestAllocation', 'requestDeallocation']
+          example: 'requestAllocation'
+        title:
+          type: string
+          example: 'Allocate Sample Asset'
+        description:
+          type: string
+          example: 'Need sample asset for productive work'
+        assignedTo:
+          title: Employee
+          type: object
+          properties:
+            id:
+              type: string
+              example: '61890767e0fff743b84689e4'
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '6e793f1ecbc24f319e89'
+        category:
+          type: string
+          enum: ['asset', 'employee', 'other']
+          example: 'asset'
+        subcategory:
+          type: string
+          enum: ['requestAllocation', 'requestDeallocation']
+          example: 'requestAllocation'
+        title:
+          type: string
+          example: 'Allocate Sample Asset'
+        description:
+          type: string
+          example: 'Need sample asset for productive work'
+        createdBy:
+          $ref: '#/components/schemas/Employee'
+        assignedTo:
+          $ref: '#/components/schemas/Employee'
+        status:
+          type: string
+          enum: ['open', 'close']
+          default: 'open'
+        createdAt:
+          type: string
+          format: datetime
+          example: '2001-01-01T00:00:00.001Z'
+        modifiedAt:
+          type: string
+          format: datetime
+          example: '2001-01-01T00:00:00.001Z'
+        closedAt:
+          type: string
+          format: datetime
+          example: null
+    UpdateTicketHistory:
+      type: object
+      properties:
+        title:
+          type: string
+          example: 'Forwarded Request to Respective Department'
+        status:
+          type: string
+          enum: ['open', 'close']
+          example: 'open'
+        assignedTo:
+          title: Employee
+          type: object
+          properties:
+            id:
+              type: string
+              example: '61890767e0fff743b84689e4'
+    TicketHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '8d563f1klos24f319e52'
+        title:
+          type: string
+          example: 'Created New Ticket'
+        ticket:
+          $ref: '#/components/schemas/Ticket'
+        updatedBy:
+          $ref: '#/components/schemas/Employee'
+        updatedAt:
+          type: string
+          format: datetime
+          example: '2001-01-01T00:00:00.001Z'
+    TicketWithHistory:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Ticket'
+      properties:
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketHistory'
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '61890767e0fff743b84689e4'
+        name:
+          type: string
+          example: John
+  parameters:
+    ticketid:
+      in: path
+      name: id
+      description: ID of the Ticket
+      required: true
+      example: '6e793f1ecbc24f319e89'
+      schema:
+        type: string
+  requestBodies:
+    CreateTicketRequest:
+      required: true
+      description: Create Ticket Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTicket'
+    UpdateTicketRequest:
+      required: true
+      description: Update Ticket Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateTicketHistory'
+
+paths:
+  /tickets:
+    get:
+      tags:
+        - Ticket
+      parameters:
+        - in: query
+          name: assignedTo
+          description: Employee ID
+          schema:
+            type: string
+        - in: query
+          name: createdBy
+          description: Employee ID
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [asset, employee, other]
+        - in: query
+          name: subcategory
+          schema:
+            type: string
+            enum: [requestAllocation, requestDeallocation, problem]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [open, close]
+        - in: query
+          name: createdBefore
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: createdAfter
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: updatedBefore
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: updatedAfter
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: closedBefore
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: closedAfter
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: orderBy
+          description: Order results by
+          schema:
+            type: string
+        - in: query
+          name: orderDirection
+          schema:
+            type: string
+            enum: ['asc', 'desc']
+        - in: query
+          name: limit
+          description: Limit results to
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          description: Offset by
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              example:
+                message: Invalid Input Provided
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                message: Internal Server Error
+      security:
+        - token: []
+    post:
+      tags:
+        - Ticket
+      summary: Create a New Ticket
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTicketRequest'
+      responses:
+        201:
+          description: New Ticket Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+      security:
+        - token: []
+  /tickets/{id}:
+    get:
+      tags:
+        - Ticket
+      summary: Get a Ticket by Id
+      parameters:
+        - $ref: '#/components/parameters/ticketid'
+      responses:
+        200:
+          description: Ticket Object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWithHistory'
+      security:
+        - token: []
+    put:
+      tags:
+        - Ticket
+      summary: Update a Ticket by Id
+      parameters:
+        - $ref: '#/components/parameters/ticketid'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTicketRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              example:
+                message: 'Ticket Updated'
+      security:
+        - token: []
+  /tickets/categories/all:
+    get:
+      tags:
+        - Ticket
+      summary: Get All Ticket Categories
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset:
+                    type: object
+                    properties:
+                      allocation:
+                        type: string
+                        example: 'Request Allocation of an Asset'
+                      deallocation:
+                        type: string
+                        example: 'Request Deallocation of an Asset'
+                  employee:
+                    type: object
+                    properties:
+                      appraisal:
+                        type: string
+                        example: 'Request an Appraisal'
+                      concern:
+                        type: string
+                        example: 'Raise a Concern'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                message: Internal Server Error
+      security:
+        - token: []
+  /tickets/categories:
+    get:
+      tags:
+        - Ticket
+      summary: Get Ticket Categories
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example: [asset, employee, other]
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                message: Internal Server Error
+      security:
+        - token: []
+  /tickets/categories/{category}:
+    get:
+      tags:
+        - Ticket
+      summary: Get Ticket Sub-Categories
+      parameters:
+        - in: path
+          name: category
+          schema:
+            type: string
+          required: true
+          description: Ticket Category
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example: [requestAllocation, requestDeallocation, problem]
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                message: Internal Server Error
+      security:
+        - token: []
