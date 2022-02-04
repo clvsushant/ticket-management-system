@@ -1,5 +1,6 @@
 const supertest = require('supertest');
 const userService = require('../../services/users');
+const { startServer, stopServer } = require('../utils/database');
 const app = require('../../app');
 const request = supertest(app);
 
@@ -8,6 +9,8 @@ const INVALID_TOKEN = 'INVALID-TOKEN';
 
 describe('Ticket tests', () => {
   beforeAll(async () => {
+    await startServer();
+
     spyOn(userService, 'getUserByToken').and.callFake(async (token) => {
       if (token.startsWith('INVALID')) {
         return Promise.reject(new Error('Invalid Token'));
@@ -23,6 +26,7 @@ describe('Ticket tests', () => {
 
   afterAll(() => {
     userService.getUserByToken.stub();
+    stopServer();
   });
 
   it('should show success message for logged in users', async () => {
