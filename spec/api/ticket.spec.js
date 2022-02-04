@@ -1,7 +1,6 @@
 const supertest = require('supertest');
 const userService = require('../../services/users');
 const app = require('../../app');
-const req = require('express/lib/request');
 const request = supertest(app);
 
 const VALID_TOKEN = 'USER-1-TOKEN';
