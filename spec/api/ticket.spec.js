@@ -149,8 +149,8 @@ describe('Ticket tests', () => {
       .send({
         category: 'asset',
         subcategory: 'requestAllocation',
-        title: 'Ticket Title',
-        description: 'Ticket Description',
+        title: 'Ticket Title1',
+        description: 'Ticket Description1',
         assignedTo: 'USER-1-ID',
       });
     expect(response.status).toBe(201);

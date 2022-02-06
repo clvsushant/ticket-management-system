@@ -14,15 +14,19 @@ exports.createTicket = async (ticketPayload, existingUserId) => {
 };
 
 exports.getTicketById = async (ticketId) => {
-  return await Ticket.findOne({
-    where: {
-      id: ticketId,
-    },
-  });
+  const ticket = await Ticket.findByPk(ticketId);
+  if (!ticket) {
+    throw new Error('Invalid Ticket Id');
+  }
+  return ticket;
 };
 
 exports.getAllTickets = async () => {
-  return await Ticket.findAll();
+  const tickets = await Ticket.findAll();
+  if (!tickets) {
+    throw new Error('No tickets found');
+  }
+  return tickets;
 };
 
 exports.deleteTicketById = async (ticketId) => {
@@ -38,6 +42,9 @@ exports.updateTicketById = async (ticketId, ticketPayload) => {
   const ticket = await Ticket.findByPk(ticketId);
   if (!ticket) {
     throw new Error('Invalid Ticket Id');
+  }
+  if (ticketPayload.status === 'closed') {
+    ticketPayload.closedAt = new Date();
   }
   await ticket.update(ticketPayload);
   await ticket.save();

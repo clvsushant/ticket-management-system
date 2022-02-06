@@ -19,7 +19,7 @@ route.get('/', ensureUser, async (req, res, next) => {
 
 route.post('/', ensureUser, async (req, res, next) => {
   try {
-    res.status(201).send(await createTicket(req.body));
+    res.status(201).send(await createTicket(req.body, req.user.id));
   } catch (err) {
     res.status(400).send({ message: err.message });
   }
