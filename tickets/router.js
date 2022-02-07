@@ -6,6 +6,8 @@ const {
   getTicketById,
   deleteTicketById,
   updateTicketById,
+  getAllCategories,
+  getAllSubCategories,
 } = require('./module');
 const route = Router();
 
@@ -44,6 +46,22 @@ route.delete('/:id', ensureUser, async (req, res, next) => {
 route.put('/:id', ensureUser, async (req, res, next) => {
   try {
     res.status(200).send(await updateTicketById(req.params.id, req.body));
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+route.get('/categories/all', ensureUser, async (req, res, next) => {
+  try {
+    res.status(200).send(await getAllCategories());
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+route.get('/categories/category', ensureUser, async (req, res, next) => {
+  try {
+    res.status(200).send(await getAllSubCategories(req.body.category));
   } catch (err) {
     res.status(400).send({ message: err.message });
   }

@@ -47,6 +47,28 @@ exports.updateTicketById = async (ticketId, ticketPayload) => {
     ticketPayload.closedAt = new Date();
   }
   await ticket.update(ticketPayload);
-  await ticket.save();
   return ticket;
+};
+
+exports.getAllCategories = async () => {
+  const categories = await Ticket.findAll({
+    attributes: ['category'],
+    group: ['category'],
+  });
+  if (!categories) {
+    throw new Error('No categories found');
+  }
+  return categories;
+};
+
+exports.getAllSubCategories = async (givenCategory) => {
+  const subcategories = await Ticket.findAll({
+    attributes: ['subcategory'],
+    group: ['subcategory'],
+    where: { category: givenCategory },
+  });
+  if (!subcategories) {
+    throw new Error('No subcategories found');
+  }
+  return subcategories;
 };

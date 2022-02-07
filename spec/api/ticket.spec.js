@@ -337,4 +337,70 @@ describe('Ticket tests', () => {
     );
     expect(response2.body[response2.body.length - 1].status).toBe('open');
   });
+
+  it('should get all categories', async () => {
+    const response = await request
+      .post('/tickets')
+      .set('Authorization', VALID_TOKEN)
+      .send({
+        category: 'asset',
+        subcategory: 'requestAllocation',
+        title: 'Ticket Title',
+        description: 'Ticket Description',
+        assignedTo: 'USER-1-ID',
+      });
+    expect(response.status).toBe(201);
+
+    const response1 = await request
+      .post('/tickets')
+      .set('Authorization', VALID_TOKEN)
+      .send({
+        category: 'asset',
+        subcategory: 'requestAllocation',
+        title: 'Ticket Title2',
+        description: 'Ticket Description2',
+        assignedTo: 'USER-1-ID',
+      });
+    expect(response1.status).toBe(201);
+
+    const response2 = await request
+      .get('/tickets/categories/all')
+      .set('Authorization', VALID_TOKEN);
+    expect(response2.status).toBe(200);
+    expect(response2.body[0].category).toBe('asset');
+  });
+
+  it('should get sub categories', async () => {
+    const response = await request
+      .post('/tickets')
+      .set('Authorization', VALID_TOKEN)
+      .send({
+        category: 'asset',
+        subcategory: 'requestAllocation',
+        title: 'Ticket Title',
+        description: 'Ticket Description',
+        assignedTo: 'USER-1-ID',
+      });
+    expect(response.status).toBe(201);
+
+    const response1 = await request
+      .post('/tickets')
+      .set('Authorization', VALID_TOKEN)
+      .send({
+        category: 'asset',
+        subcategory: 'requestDeallocation',
+        title: 'Ticket Title2',
+        description: 'Ticket Description2',
+        assignedTo: 'USER-1-ID',
+      });
+    expect(response1.status).toBe(201);
+
+    const response2 = await request
+      .get('/tickets/categories/category')
+      .set('Authorization', VALID_TOKEN)
+      .send({ category: 'asset' });
+    expect(response2.status).toBe(200);
+    expect(response2.body[0].subcategory).toBe('requestAllocation');
+    expect(response2.body[1].subcategory).toBe('requestDeallocation');
+  });
 });
