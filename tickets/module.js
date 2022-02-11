@@ -43,7 +43,7 @@ exports.updateTicketById = async (ticketId, ticketPayload) => {
   if (!ticket) {
     throw new Error('Invalid Ticket Id');
   }
-  if (ticketPayload.status === 'closed') {
+  if (ticketPayload.status && ticketPayload.status === 'closed') {
     ticketPayload.closedAt = new Date();
   }
   await ticket.update(ticketPayload);
