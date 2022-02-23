@@ -6,7 +6,7 @@ const sequelize = new Sequelize({
   storage,
 });
 
-exports.Ticket = sequelize.define('Ticket', {
+const Ticket = sequelize.define('Ticket', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -43,6 +43,45 @@ exports.Ticket = sequelize.define('Ticket', {
     type: DataTypes.DATE,
   },
 });
+
+const TicketHistory = sequelize.define('TicketHistory', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'Create new ticket',
+  },
+  ticket: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  updatedBy: {
+    type: DataTypes.UUID,
+  },
+});
+
+const TicketWithHistory = sequelize.define('TicketWithHistory', {
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+  },
+  history: {
+    type: DataTypes.UUID,
+  },
+});
+
+// Ticket.hasOne(TicketHistory, { foreignKey: 'ticket' });
+TicketHistory.belongsTo(Ticket, { foreignKey: 'ticket' });
+TicketWithHistory.belongsTo(Ticket, { foreignKey: 'id' });
+TicketWithHistory.belongsTo(TicketHistory, { foreignKey: 'history' });
+
+exports.Ticket = Ticket;
+exports.TicketHistory = TicketHistory;
+exports.TicketWithHistory = TicketWithHistory;
 
 exports.connectToDB = async () => {
   try {
