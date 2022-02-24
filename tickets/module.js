@@ -1,4 +1,4 @@
-const { Ticket } = require('../database');
+const { Ticket, TicketHistory, TicketWithHistory } = require('../database');
 const { createTickectSchema } = require('./validation');
 
 exports.createTicket = async (ticketPayload, existingUserId) => {
@@ -14,7 +14,11 @@ exports.createTicket = async (ticketPayload, existingUserId) => {
 };
 
 exports.getTicketById = async (ticketId) => {
-  const ticket = await Ticket.findByPk(ticketId);
+  const ticket = await Ticket.findOne({
+    where: { id: ticketId },
+    include: [{ model: TicketHistory }],
+  });
+  // console.log(ticket.toJSON());
   if (!ticket) {
     throw new Error('Invalid Ticket Id');
   }
@@ -47,6 +51,9 @@ exports.updateTicketById = async (ticketId, ticketPayload) => {
     ticketPayload.closedAt = new Date();
   }
   await ticket.update(ticketPayload);
+  const newTicket = await TicketHistory.findOne({ TicketId: ticketId });
+  await ticket.addTicketHistory(newTicket);
+  // console.log(ticket.toJSON());
   return ticket;
 };
 
