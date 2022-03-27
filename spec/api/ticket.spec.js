@@ -25,7 +25,7 @@ describe('Ticket tests', () => {
   });
 
   afterAll(() => {
-    userService.getUserByToken.stub();
+    userService.getUserByToken.and.stub();
     stopServer();
   });
 
