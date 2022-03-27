@@ -172,8 +172,8 @@ describe('Ticket tests', () => {
     expect(response1.body.subcategory).toBe('requestAllocation');
     expect(response1.body.title).toBe('Ticket Title2');
     expect(response1.body.description).toBe('Ticket Description2');
-    expect(response1.body.assignedTo).toBe('USER-1-ID');
     expect(response1.body.status).toBe('closed');
+    expect(response1.body.assignedTo).toBe('USER-1-ID');
   });
 
   it('should not update ticket by id if not logged in', async () => {
