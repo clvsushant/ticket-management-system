@@ -1,0 +1,7 @@
+{
+  "jasmineExplorer.env": {
+    "DB_PATH": "test.sqlite3",
+    "JWT_SECRET": "ebbf7d908af98bc9c4d5daa907e32298130f8bf305270ec7727043a773aa89942a39ee0a464b0f42c0edee1bcafe66d50d27357f5922be419072cd30d218a264",
+    "USER_URL": "http://localhost:4000"
+  }
+}

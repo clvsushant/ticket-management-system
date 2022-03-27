@@ -12,14 +12,14 @@ describe('Ticket tests', () => {
     await startServer();
 
     spyOn(userService, 'getUserByToken').and.callFake(async (token) => {
-      if (token.startsWith('INVALID')) {
-        return Promise.reject(new Error('Invalid Token'));
-      } else {
+      if (token === VALID_TOKEN) {
         return Promise.resolve({
           id: 'USER-1-ID',
           name: 'User 1',
           email: 'user1mail@gmail.com',
         });
+      } else {
+        return Promise.reject(new Error('Invalid Token'));
       }
     });
   });
