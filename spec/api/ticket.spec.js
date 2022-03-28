@@ -58,8 +58,8 @@ describe('Ticket tests', () => {
         category: 'asset',
         subcategory: 'requestAllocation',
         title: 'Ticket Title',
-        description: 'Ticket Description',
         assignedTo: 'USER-1-ID',
+        description: 'Ticket Description',
       });
     expect(response.status).toBe(201);
   });
